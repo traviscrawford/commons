@@ -11,7 +11,6 @@ public class FileEchoer implements Echoer {
   @Override
   public String getEchoString() {
     try {
-      // TODO(travis): Pass yaml to configure?
       Path p = Paths.get("/Users/travis/src/commons/codelab/echo.txt");
       return new String(Files.readAllBytes(p));
     } catch (FileNotFoundException e) {
