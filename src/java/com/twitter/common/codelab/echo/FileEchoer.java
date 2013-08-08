@@ -7,10 +7,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FileEchoer implements Echoer {
+
   @Override
   public String getEchoString() {
     try {
-      Path p = Paths.get("mystring.txt");
+      // TODO(travis): Pass yaml to configure?
+      Path p = Paths.get("/Users/travis/src/commons/codelab/echo.txt");
       return new String(Files.readAllBytes(p));
     } catch (FileNotFoundException e) {
       throw new RuntimeException();

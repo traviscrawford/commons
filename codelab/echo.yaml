@@ -1,1 +1,1 @@
-class: com.twitter.common.codelab.echo.FileEchoer
+com.twitter.common.codelab.echo.FileEchoer

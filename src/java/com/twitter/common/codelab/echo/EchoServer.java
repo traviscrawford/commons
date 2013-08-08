@@ -1,9 +1,9 @@
 package com.twitter.common.codelab.echo;
 
 import java.io.File;
-import java.util.Map;
-
-import org.yaml.snakeyaml.Yaml;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import com.twitter.common.application.AbstractApplication;
 import com.twitter.common.application.AppLauncher;
@@ -19,13 +19,11 @@ public class EchoServer extends AbstractApplication {
 
   @Override
   public void run() {
-    Yaml yaml = new Yaml();
-    Map<String, Object> config =
-        (Map<String, Object>) yaml.load(CONFIG_FILE.get().getPath());
-    String classStr = (String) config.get("class");
-
     try {
-      Class clazz = Class.forName(classStr);
+      String classStr =
+          new String(Files.readAllBytes(Paths.get(CONFIG_FILE.get().getPath())));
+      System.out.println("Using echoer: " + classStr);
+      Class clazz = Class.forName(classStr.trim());
       Echoer echoer = (Echoer) clazz.newInstance();
       System.out.println(echoer.getEchoString());
     } catch (ClassNotFoundException e) {
@@ -33,6 +31,8 @@ public class EchoServer extends AbstractApplication {
     } catch (InstantiationException e) {
       throw new RuntimeException();
     } catch (IllegalAccessException e) {
+      throw new RuntimeException();
+    } catch (IOException e) {
       throw new RuntimeException();
     }
   }
