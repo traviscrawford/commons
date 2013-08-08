@@ -679,3 +679,9 @@ jar_library(name = 'caliper',
               jar(org = 'com.google.caliper', name = 'caliper', rev = '0.5-rc1').with_sources(),
             ]
            )
+
+jar_library(name = 'hadoop-core',
+            dependencies = [
+              jar(org = 'org.apache.hadoop', name = 'hadoop-core', rev = '1.0.4'),
+            ],
+           )

@@ -11,7 +11,7 @@ import com.twitter.common.args.Arg;
 import com.twitter.common.args.CmdLine;
 import com.twitter.common.args.constraints.NotNull;
 
-public class EchoServer extends AbstractApplication {
+public class EchoMain extends AbstractApplication {
 
   @NotNull
   @CmdLine(name = "config", help = "Path of the configuration file.")
@@ -38,6 +38,6 @@ public class EchoServer extends AbstractApplication {
   }
 
   public static void main(String[] args) {
-    AppLauncher.launch(EchoServer.class, args);
+    AppLauncher.launch(EchoMain.class, args);
   }
 }
