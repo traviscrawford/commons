@@ -3,7 +3,6 @@ package com.twitter.common.codelab.echo;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import com.twitter.common.codelab.echo.Echoer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.Path;
