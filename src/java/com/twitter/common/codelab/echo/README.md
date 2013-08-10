@@ -112,6 +112,37 @@ Prior to this refactor our bundle was 14 MB with 32 dependencies! By simply refa
 
 Before moving on, let's remember `FileEchoer` is still bundled with the interface. As `FileEchoer` requires no additional dependencies (just the standard library) there's no harm in combining them in a single target.
 
+# BUILD file with multiple targets approach
+
+Earlier we learned an approach for managing dependencies by refactoring into a subpackage. This approach clearly distinguishes the optional functionality, treating it as a simple library. When possible, I highly recommend that approach.
+
+However, there will be times when refactoring is not possible. As an example, imagine the 
+
+target inside a new build file. If possible I highly recommend one target per build file.
+
+
+
+  $ mkdir src/java/com/twitter/common/codelab/echo/main
+  $ vi src/java/com/twitter/common/codelab/echo/main/BUILD
+  
+  # No dependencies outside the standard library.
+  java_library(name='echo',
+    sources=['Echoer.java', 'FileEchoer.java'],
+  )
+
+  # Depends on default target + extra targets needed by main.
+  jvm_binary(name='main',
+    main='com.twitter.common.codelab.echo.EchoMain',
+    dependencies=[
+      pants('src/java/com/twitter/common/application'),
+      pants(':echo'),
+    ],
+    sources=['EchoerMain.java'],
+  )
+
+
+
+
 # TODO
 
 Its pretty tedious to have users create a `jvm_binary` and `jvm_app`. What I'd like to do is have a single target where users combine all the dependencies together and create the deploy bundle. Currently we need to have people first create a `jvm_binary` where all the dependencies are pulled together, and a separate `jvm_app` where we create the package.

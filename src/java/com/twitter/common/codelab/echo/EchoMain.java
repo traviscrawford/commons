@@ -1,22 +1,16 @@
 package com.twitter.common.codelab.echo;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 public final class EchoMain {
 
   private EchoMain() {
   }
 
   /**
-   * First arg is path of the configuration file.
+   * First arg is {@link Echoer} implementation to use.
    */
   public static void main(String[] args) throws Exception {
-      String classStr =
-          new String(Files.readAllBytes(Paths.get(args[0])));
-      System.out.println("Using echoer: " + classStr);
-      Class clazz = Class.forName(classStr.trim());
-      Echoer echoer = (Echoer) clazz.newInstance();
-      System.out.println(echoer.getEchoString());
+    System.out.println("Using Echoer: " + args[0]);
+    Echoer echoer = (Echoer) Class.forName(args[0]).newInstance();
+    System.out.println(echoer.getEchoString());
   }
 }
