@@ -1,43 +1,32 @@
 The goal of this codelab is to help you learn how to best structure your code and configure pants to effectively manage dependencies within a single code repository.
 
-Let's begin by surveying they echo codelab, located at src/java/com/twitter/common/codelab/echo.
+Let's begin by surveying they echo codelab, located at `src/java/com/twitter/common/codelab/echo`. The example echoer implementations require an additional file containing the string to print, located at `codelab/echo.txt`.
 
-    $ find src/java/com/twitter/common/codelab/echo
-    src/java/com/twitter/common/codelab/echo
-    src/java/com/twitter/common/codelab/echo/BUILD
-    src/java/com/twitter/common/codelab/echo/Echoer.java
-    src/java/com/twitter/common/codelab/echo/EchoMain.java
-    src/java/com/twitter/common/codelab/echo/FileEchoer.java
-    src/java/com/twitter/common/codelab/echo/HadoopEchoer.java
-    src/java/com/twitter/common/codelab/echo/README.md
+    [tw-mbp13-travis commons]$ ls -1 src/java/com/twitter/common/codelab/echo
+    BUILD
+    EchoMain.java
+    Echoer.java
+    FileEchoer.java
+    HadoopEchoer.java
+    README.md
 
 Here we see an appliction called `EchoMain`, that simply prints a string provided by an implementation of `Echoer`. Two implementations exist:
 
 * `FileEchoer`, a simple local file-based implementation that only depends on the interface and standard library
 * `HadoopEchoer`, a Hadoop-based implementation that depends on the interface and Hadoop
 
-The program requires two additional files, a configuration file that simply contains the class name of an `Echoer` implementation to use, and a file with the string to echo.
-
-    $ find codelab
-    codelab
-    codelab/BUILD
-    codelab/echo.txt
-    codelab/echo.yaml
-
 Let's see an example run:
 
-    ./pants goal run src/java/com/twitter/common/codelab/echo:echo-bin \
-      --compile-java-args='-target 7 -source 7' \
-      --jvm-run-args='-config=codelab/echo.yaml'
-    Using echoer: com.twitter.common.codelab.echo.hadoop.HadoopEchoer
+    $ ./pants goal run src/java/com/twitter/common/codelab/echo:echo-bin \
+      --jvm-run-args='com.twitter.common.codelab.echo.HadoopEchoer'
+    Using Echoer: com.twitter.common.codelab.echo.HadoopEchoer
     Hello there!
 
 Now let's use the local file-based implementaion.
 
-    $ echo com.twitter.common.codelab.echo.FileEchoer > codelab/echo.yaml
-    ./pants goal run src/java/com/twitter/common/codelab/echo:echo-bin \
-      --compile-java-args='-target 7 -source 7' --jvm-run-args='-config=codelab/echo.yaml'
-    Using echoer: com.twitter.common.codelab.echo.FileEchoer
+    ./pants goal clean-all run src/java/com/twitter/common/codelab/echo:echo-bin \
+      --jvm-run-args='com.twitter.common.codelab.echo.FileEchoer'
+    Using Echoer: com.twitter.common.codelab.echo.FileEchoer
     Hello there!
 
 And let's create a bundle. Notice how the archive is quite large because it includes all Hadoop dependencies.
