@@ -50,7 +50,7 @@ Pants provides solutions to these issues by allowing developers to structure the
 Let's put our developer hat on and extend this application with a new `Echoer`. Conveniently, one already exists that you can move into the source tree.
 
     $ mkdir -p src/java/com/twitter/myapp/echo
-    $ mv codelab/StaticEchoer.java src/java/com/twitter/myapp/echo/StaticEchoer.java
+    $ cp codelab/StaticEchoer.java src/java/com/twitter/myapp/echo/StaticEchoer.java
 
 This simple implementation always returns the same string. Now, let's write the BUILD file for this library.
 
@@ -61,10 +61,31 @@ This simple implementation always returns the same string. Now, let's write the 
         # Necessary for Echoer interface - but with many fellow travelers!
         pants('src/java/com/twitter/common/codelab/echo'),
       ],
-      sources=('*.globs'),
+      sources=globs('*.java'),
+    )
+    
+    jvm_binary(name='echo-bin',
+      main='com.twitter.common.codelab.echo.EchoMain',
+      dependencies=[pants(':echo')],
     )
 
-To build our very simple implementation of this interface we pull in the Appication stack, as well as Hadoop. There's got to be a better way.
+    jvm_app(name='echo-app',
+      binary=pants(':echo-bin'),
+      bundles=[bundle()],
+    )
+
+Let's run our new echoer implementation and view the dependencies in our bundle. Notice how Hadoop is included even though we use nothing beyond the standard library.
+
+    $ ./pants goal clean-all run src/java/com/twitter/myapp/echo:echo-bin \
+      --jvm-run-args='com.twitter.common.myapp.echo.StaticEchoer'
+    Using Echoer: com.twitter.common.myapp.echo.StaticEchoer
+    tall cat is tall
+    $ ./pants goal bundle src/java/com/twitter/myapp/echo:echo-app --bundle-archive=zip
+    $ du -sh dist/echo-app.zip 
+     14M	dist/echo-app.zip
+    $ ls dist/echo-app-bundle/libs/ | wc -l
+          32
+
 
 # Rule of thumb: Use a subpackage when adding large dependencies
 
@@ -77,7 +98,9 @@ Let's remind ourselves of the echoer source files:
 
 Hadoop and its transitive dependencies are quite large, and not critical to the echoer, making `HadoopEchoer` a great candidate to refactor into a subpackage. Let's move `HadoopEchoer` into a subpackage and expose it as a stand-alone library.
 
-    src/java/com/twitter/common/codelab/echo/hadoop/BUILD:
+    $ mkdir src/java/com/twitter/common/codelab/echo/hadoop
+    $ vi src/java/com/twitter/common/codelab/echo/hadoop/BUILD
+
     java_library(name='hadoop',
       dependencies=[
         pants('3rdparty:hadoop-core'),
@@ -90,48 +113,16 @@ Now we can remove the `hadoop-core` dependency fom `src/java/com/twitter/common/
 
 Let's create a bundle with `StaticEchoer` and see how much fat we've cut.
 
-    $ ./pants goal bundle codelab:echo --bundle-archive=zip
-    $ du -sh dist/echo.zip 
-    $ du -sh dist/echo.zip 
-    4.0K	dist/echo.zip
-    $ ls dist/echo-bundle/libs/ | wc -l
-           0
+    $ ./pants goal clean-all run src/java/com/twitter/myapp/echo:echo-bin \
+      --jvm-run-args='com.twitter.common.myapp.echo.StaticEchoer'
+    Using Echoer: com.twitter.common.myapp.echo.StaticEchoer
+    tall cat is tall
+    $ ./pants goal bundle src/java/com/twitter/myapp/echo:echo-app --bundle-archive=zip
+    $ du -sh dist/echo-app.zip 
+    4.0K	dist/echo-app.zip
+    $ ls dist/echo-app-bundle/libs/ | wc -l
+          0
 
 Prior to this refactor our bundle was 14 MB with 32 dependencies! By simply refactoring the Hadoop-based functionality into an optional library we've significantly shrunk the application bundle.
 
 Before moving on, let's remember `FileEchoer` is still bundled with the interface. As `FileEchoer` requires no additional dependencies (just the standard library) there's no harm in combining them in a single target.
-
-# BUILD file with multiple targets approach
-
-Earlier we learned an approach for managing dependencies by refactoring into a subpackage. This approach clearly distinguishes the optional functionality, treating it as a simple library. When possible, I highly recommend that approach.
-
-However, there will be times when refactoring is not possible. As an example, imagine the 
-
-target inside a new build file. If possible I highly recommend one target per build file.
-
-
-
-  $ mkdir src/java/com/twitter/common/codelab/echo/main
-  $ vi src/java/com/twitter/common/codelab/echo/main/BUILD
-  
-  # No dependencies outside the standard library.
-  java_library(name='echo',
-    sources=['Echoer.java', 'FileEchoer.java'],
-  )
-
-  # Depends on default target + extra targets needed by main.
-  jvm_binary(name='main',
-    main='com.twitter.common.codelab.echo.EchoMain',
-    dependencies=[
-      pants('src/java/com/twitter/common/application'),
-      pants(':echo'),
-    ],
-    sources=['EchoerMain.java'],
-  )
-
-
-
-
-# TODO
-
-Its pretty tedious to have users create a `jvm_binary` and `jvm_app`. What I'd like to do is have a single target where users combine all the dependencies together and create the deploy bundle. Currently we need to have people first create a `jvm_binary` where all the dependencies are pulled together, and a separate `jvm_app` where we create the package.
