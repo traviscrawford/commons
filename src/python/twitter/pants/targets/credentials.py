@@ -22,9 +22,11 @@ class Credentials(Target):
   def __init__(self, name, username=None, password=None,
                exclusives=None):
     """
-      :name The name of these credentials
-      :username Either a constant username value or else a callable that can fetch one
-      :password Either a constant password value or else a callable that can fetch one
+    :param string name: The name of these credentials
+    :param username: Either a constant username value or else a callable that can fetch one
+    :type username: string or callable
+    :param password: Either a constant password value or else a callable that can fetch one
+    :type password: string or callable
     """
     Target.__init__(self, name, exclusives=exclusives)
     self._username = username if callable(username) else lambda: username

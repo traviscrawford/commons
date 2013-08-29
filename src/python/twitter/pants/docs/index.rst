@@ -9,9 +9,9 @@ Welcome to pants's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 4
 
-   modules.rst
+   targets
+   tasks
 
 Indices and tables
 ==================
@@ -19,4 +19,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
