@@ -24,19 +24,19 @@ class AnnotationProcessor(ExportableJvmLibrary, WithLegacyResources):
   def __init__(self, name, sources, provides=None, dependencies=None, excludes=None, resources=None,
                processors=None, exclusives=None):
 
-    """name: The name of this module target, addressable via pants via the portion of the spec
+    """:param name: The name of this module target, addressable via pants via the portion of the spec
         following the colon
-    sources: A list of paths containing the java source files this modules jar is compiled from
-    provides: An optional Dependency object indicating the The ivy artifact to export
-    dependencies: An optional list of Dependency objects specifying the binary (jar) dependencies of
+    :param sources: A list of paths containing the java source files this modules jar is compiled from
+    :param provides: An optional Dependency object indicating the The ivy artifact to export
+    :param dependencies: An optional list of Dependency objects specifying the binary (jar) dependencies of
         this module.
-    excludes: An optional list of dependency exclude patterns to filter all of this module's
+    :param excludes: An optional list of dependency exclude patterns to filter all of this module's
         transitive dependencies against.
-    resources: An optional list of paths containing (filterable) text file resources to place in
+    :param resources: An optional list of paths containing (filterable) text file resources to place in
         this module's jar
-    processors: a list of the fully qualified class names of the annotation processors this library
+    :param processors: a list of the fully qualified class names of the annotation processors this library
         exports
-    exclusives:   An optional map of exclusives tags. See CheckExclusives for details.
+    :param exclusives: An optional map of exclusives tags. See CheckExclusives for details.
     """
 
     ExportableJvmLibrary.__init__(self, name, sources, provides, dependencies, excludes,
