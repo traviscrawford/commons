@@ -22,7 +22,8 @@ except ImportError:
 import os
 import getpass
 
-from twitter.pants.base.build_environment import get_buildroot
+from .build_environment import get_buildroot
+from .defaults import PantsOption
 
 
 class Config(object):
@@ -130,6 +131,14 @@ class Config(object):
       returned.
     """
     return self._getinstance(section, option, type, default=default)
+
+  def get_pants_option(self, pants_option):
+    if not isinstance(pants_option, PantsOption):
+      raise ValueError('Expected PantsOption but found %s' % pants_option)
+    return self.get(section=pants_option.section,
+                    option=pants_option.option,
+                    type=pants_option.valtype,
+                    default=pants_option.default)
 
   def get_required(self, section, option, type=str):
     """Retrieves option from the specified section and attempts to parse it as type.
