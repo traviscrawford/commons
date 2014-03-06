@@ -22,8 +22,24 @@ except ImportError:
 import os
 import getpass
 
+from collections import namedtuple
+
 from twitter.pants.base.build_environment import get_buildroot
-from twitter.pants.base.defaults import PantsOption
+
+
+class ConfigOption(object):
+  Option = namedtuple('Option', 'section option help valtype default')
+
+  _CONFIG_OPTIONS = set()
+
+  @classmethod
+  def of(cls, section, option, help, valtype=str, default=None):
+    option = cls.Option(section=section, option=option, help=help, valtype=valtype, default=default)
+    for opt in cls.CONFIG_OPTIONS:
+      if opt.section == option.section and opt.option == option.section:
+        raise ValueError
+    cls._CONFIG_OPTIONS.add(option)
+    return option
 
 
 class Config(object):
@@ -34,6 +50,13 @@ class Config(object):
   """
 
   DEFAULT_SECTION = ConfigParser.DEFAULTSECT
+
+  DEFAULT_PANTS_WORKDIR = ConfigOption.of(
+    section='default',
+    option='pants_workdir',
+    help='the scratch space used to for live builds in this repo',
+    default=os.path.join(get_buildroot(), '.pants.d'))
+
 
   class ConfigError(Exception):
     pass
@@ -73,10 +96,12 @@ class Config(object):
       homedir=os.path.expanduser('~'),
       user=getpass.getuser(),
       pants_bootstrapdir=os.path.expanduser('~/.pants.d'),
-      pants_workdir=os.path.join(get_buildroot(), '.pants.d'),
       pants_supportdir=os.path.join(get_buildroot(), 'build-support'),
       pants_distdir=os.path.join(get_buildroot(), 'dist')
     )
+
+    standard_defaults[Config.DEFAULT_PANTS_WORKDIR.option] = Config.DEFAULT_PANTS_WORKDIR.default
+
     if defaults:
       standard_defaults.update(defaults)
     return ConfigParser.SafeConfigParser(standard_defaults)
@@ -141,13 +166,13 @@ class Config(object):
     """
     return self._getinstance(section, option, type, default=default)
 
-  def get_pants_option(self, pants_option):
-    if not isinstance(pants_option, PantsOption):
-      raise ValueError('Expected PantsOption but found %s' % pants_option)
-    return self.get(section=pants_option.section,
-                    option=pants_option.option,
-                    type=pants_option.valtype,
-                    default=pants_option.default)
+  def get_option(self, option):
+    if not isinstance(option, ConfigOption.Option):
+      raise ValueError('Expected %s but found %s' % (type(ConfigOption.Option), option))
+    return self.get(section=option.section,
+                    option=option.option,
+                    type=option.valtype,
+                    default=option.default)
 
   def get_required(self, section, option, type=str):
     """Retrieves option from the specified section and attempts to parse it as type.
