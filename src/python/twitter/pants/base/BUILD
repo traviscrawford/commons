@@ -87,10 +87,16 @@ python_library(
 )
 
 python_library(
+  name = 'defaults',
+  sources = ['defaults.py'],
+)
+
+python_library(
   name = 'config',
   sources = ['config.py'],
   dependencies = [
     pants(':build_environment'),
+    pants(':defaults'),
   ]
 )
 

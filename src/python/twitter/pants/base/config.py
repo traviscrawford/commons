@@ -22,8 +22,8 @@ except ImportError:
 import os
 import getpass
 
-from .build_environment import get_buildroot
-from .defaults import PantsOption
+from twitter.pants.base.build_environment import get_buildroot
+from twitter.pants.base.defaults import PantsOption
 
 
 class Config(object):
