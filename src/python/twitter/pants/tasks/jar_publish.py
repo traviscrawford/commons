@@ -34,6 +34,7 @@ from twitter.common.log.options import LogOptions
 
 from twitter.pants.base.build_environment import get_buildroot, get_scm
 from twitter.pants.base.address import Address
+from twitter.pants.base.config import ConfigOption
 from twitter.pants.base.target import Target
 from twitter.pants.base.generator import Generator, TemplateData
 from twitter.pants.ivy import Bootstrapper, Ivy
@@ -287,6 +288,13 @@ class JarPublish(ScmPublish, Task):
 
   _CONFIG_SECTION = 'jar-publish'
 
+  _JAR_PUBLISH_IVY_JVMARGS = ConfigOption.of(
+    section=_CONFIG_SECTION,
+    option='ivy_jvmargs',
+    valtype=list,
+    help='asdf',
+    default=[])
+
   @classmethod
   def setup_parser(cls, option_group, args, mkflag):
     # TODO(John Sirois): Support a preview mode that outputs a file with entries like:
@@ -362,7 +370,7 @@ class JarPublish(ScmPublish, Task):
     self.outdir = os.path.join(context.config.getdefault('pants_workdir'), 'publish')
     self.cachedir = os.path.join(self.outdir, 'cache')
 
-    self._jvmargs = context.config.getlist(JarPublish._CONFIG_SECTION, 'ivy_jvmargs', default=[])
+    self._jvmargs = context.config.get_option(JarPublish._JAR_PUBLISH_IVY_JVMARGS)
 
     if context.options.jar_publish_local:
       local_repo = dict(

@@ -22,20 +22,33 @@ except ImportError:
 import os
 import getpass
 
-from collections import namedtuple
-
 from twitter.pants.base.build_environment import get_buildroot
 
 
 class ConfigOption(object):
-  Option = namedtuple('Option', 'section option help valtype default')
+  class Option(object):
+    def __init__(self, section, option, help, valtype, default):
+      self.section = section
+      self.option = option
+      self.help = help
+      self.valtype = valtype
+      self.default = default
+
+    def __hash__(self):
+      return hash(self.section + self.option)
+
+    def __eq__(self, other):
+      return True if self.section == other.section and self.option == other.option else False
+
+    def __repr__(self):
+      return '%s(%s.%s)' % (type(self), self.section, self.option)
 
   _CONFIG_OPTIONS = set()
 
   @classmethod
   def of(cls, section, option, help, valtype=str, default=None):
     option = cls.Option(section=section, option=option, help=help, valtype=valtype, default=default)
-    for opt in cls.CONFIG_OPTIONS:
+    for opt in cls._CONFIG_OPTIONS:
       if opt.section == option.section and opt.option == option.section:
         raise ValueError
     cls._CONFIG_OPTIONS.add(option)

@@ -26,8 +26,8 @@ def initial_reporting(config, run_tracker):
 
   Will be changed after we parse cmd-line flags.
   """
-  reports_dir = os.path.join(config.get_pants_option(config.DEFAULT_PANTS_WORKDIR),
-                             config.get_pants_option(_REPORTING_REPORTS_DIR))
+  reports_dir = os.path.join(config.get_option(config.DEFAULT_PANTS_WORKDIR),
+                             config.get_option(_REPORTING_REPORTS_DIR))
   link_to_latest = os.path.join(reports_dir, 'latest')
   if os.path.exists(link_to_latest):
     os.unlink(link_to_latest)
