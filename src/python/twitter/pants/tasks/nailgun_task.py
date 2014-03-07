@@ -17,6 +17,7 @@
 import os
 import time
 
+from twitter.pants.base.config import ConfigOption
 from twitter.pants.java import util
 from twitter.pants.java.distribution import Distribution
 from twitter.pants.java.executor import SubprocessExecutor
@@ -28,6 +29,19 @@ from . import Task, TaskError
 class NailgunTask(Task):
 
   _DAEMON_OPTION_PRESENT = False
+
+  _NAILGUN_WORKDIR = ConfigOption.of(
+    section='nailgun',
+    option='workdir',
+    help='Directory, relative to pants_workdir, of the nailgun cache.',
+    default='ng')
+
+  _NAILGUN_JVM_ARGS = ConfigOption.of(
+    section='nailgun',
+    option='jvm_args',
+    help='List of arguments to the nailgun process.',
+    valtype=list,
+    default=list())
 
   @staticmethod
   def killall(logger=None, everywhere=False):
@@ -54,7 +68,9 @@ class NailgunTask(Task):
   def __init__(self, context, minimum_version=None, jdk=False):
     super(NailgunTask, self).__init__(context)
 
-    self._workdir = os.path.join(context.config.get('nailgun', 'workdir'), self.__class__.__name__)
+    self._workdir = os.path.join(
+      context.config.get_option(context.config.DEFAULT_PANTS_WORKDIR),
+      context.config.get_option(self._NAILGUN_WORKDIR))
     self._nailgun_bootstrap_key = 'nailgun'
     self._jvm_tool_bootstrapper.register_jvm_tool(self._nailgun_bootstrap_key, [':nailgun-server'])
 
@@ -81,12 +97,8 @@ class NailgunTask(Task):
 
   @property
   def jvm_args(self):
-    """Default jvm args the nailgun will be launched with.
-
-    By default no special jvm args are used.  If a value for ``jvm_args`` is specified in pants.ini
-    globally in the ``DEFAULT`` section or in the ``nailgun`` section, then that list will be used.
-    """
-    return self.context.config.getlist('nailgun', 'jvm_args', default=[])
+    """Default jvm args the nailgun will be launched with."""
+    return self.context.config.get_option(self._NAILGUN_JVM_ARGS)
 
   def runjava(self, classpath, main, jvm_options=None, args=None, workunit_name=None,
               workunit_labels=None):
