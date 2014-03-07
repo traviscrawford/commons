@@ -40,8 +40,6 @@ The following commands must be run from the pants repo root.
 The site will be generated into ``_build/html``, which should not be checked
 in. ``open _build/html/index.html`` to view your changes.
 
-.. rm pants.pex; ./pants.bootstrap goal builddict && cd src/python/twitter/pants/docs/ && ./gen.py && make SPHINXOPTS='-W' clean html && cd -
-
 -------------------
 Publishing the site
 -------------------
