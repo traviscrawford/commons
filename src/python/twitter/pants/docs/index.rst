@@ -61,7 +61,6 @@ Pants Reference Documentation
    goals_reference
    config_reference
 
->>>>>>> origin/master
 
 Contributing to Pants
 ---------------------
