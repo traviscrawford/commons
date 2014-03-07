@@ -39,7 +39,7 @@ from twitter.pants import binary_util
 from twitter.pants.base.address import Address
 from twitter.pants.base.build_environment import get_buildroot
 from twitter.pants.base.build_file import BuildFile
-from twitter.pants.base.config import Config
+from twitter.pants.base.config import Config, ConfigOption
 from twitter.pants.base.parse_context import ParseContext
 from twitter.pants.base.rcfile import RcFile
 from twitter.pants.base.run_info import RunInfo
@@ -549,8 +549,16 @@ except ImportError:
   pass
 
 class Invalidator(ConsoleTask):
+  _TASKS_BUILD_INVALIDATOR = ConfigOption.of(
+    section='tasks',
+    option='build_invalidator',
+    help='Directory, relative to pants_workdir, to cache build invalidator checksums.',
+    default='build_invalidator')
+
   def execute(self, targets):
-    build_invalidator_dir = self.context.config.get('tasks', 'build_invalidator')
+    build_invalidator_dir = os.path.join(
+      self.context.config.get_option(Config.DEFAULT_PANTS_WORKDIR),
+      self.context.config.get_option(self._TASKS_BUILD_INVALIDATOR))
     _cautious_rmtree(build_invalidator_dir)
 goal(
   name='invalidate',
