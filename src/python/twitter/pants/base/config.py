@@ -46,6 +46,10 @@ class ConfigOption(object):
   _CONFIG_OPTIONS = set()
 
   @classmethod
+  def all(cls):
+    return cls._CONFIG_OPTIONS
+
+  @classmethod
   def of(cls, section, option, help, valtype=str, default=None):
     option = cls.Option(section=section, option=option, help=help, valtype=valtype, default=default)
     for opt in cls._CONFIG_OPTIONS:
@@ -64,8 +68,14 @@ class Config(object):
 
   DEFAULT_SECTION = ConfigParser.DEFAULTSECT
 
+  DEFAULT_BUILDROOT = ConfigOption.of(
+    section=DEFAULT_SECTION,
+    option='buildroot',
+    help='the root of this repo',
+    default=get_buildroot())
+
   DEFAULT_PANTS_WORKDIR = ConfigOption.of(
-    section='default',
+    section=DEFAULT_SECTION,
     option='pants_workdir',
     help='the scratch space used to for live builds in this repo',
     default=os.path.join(get_buildroot(), '.pants.d'))
@@ -105,7 +115,6 @@ class Config(object):
       pants_workdir: the scratch space used to for live builds in this repo
     """
     standard_defaults = dict(
-      buildroot=get_buildroot(),
       homedir=os.path.expanduser('~'),
       user=getpass.getuser(),
       pants_bootstrapdir=os.path.expanduser('~/.pants.d'),
@@ -113,6 +122,7 @@ class Config(object):
       pants_distdir=os.path.join(get_buildroot(), 'dist')
     )
 
+    standard_defaults[Config.DEFAULT_BUILDROOT.option] = Config.DEFAULT_BUILDROOT.default
     standard_defaults[Config.DEFAULT_PANTS_WORKDIR.option] = Config.DEFAULT_PANTS_WORKDIR.default
 
     if defaults:

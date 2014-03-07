@@ -61,6 +61,7 @@ Pants Reference Documentation
 
    build_dictionary
    goals_reference
+   config_reference
    targets
    tasks
    base

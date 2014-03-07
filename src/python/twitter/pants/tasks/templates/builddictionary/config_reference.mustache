@@ -1,0 +1,23 @@
+***********************
+Configuration Reference
+***********************
+
+List most software, pants supports a configuration file for configuring how it
+behaves. All repos using pants have a ``pants.ini`` file at the root. Additionally,
+users can override that default config with a ``~/.pants.new.rc`` file.
+
+The following configuration options are provided:
+
+{{#sections}}
+
+.. _configref_section_{{section}}
+
+{{section}} section
+-----------------------------------------------------------------------------
+
+{{#options}}
+``{{option}}`` - {{help}} (default: ``{{default}}``)
+
+{{/options}}
+
+{{/sections}}
