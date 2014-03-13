@@ -43,6 +43,7 @@ After updating the checked-in version numbers, publish locally and verify the re
    source $VENV_DIR/bin/activate
    pip install --allow-external elementtree --allow-unverified elementtree \
      --find-links=file://$(pwd)/dist twitter.pants==0.0.17
+   pants goal list ::
    deactivate
 
 Now that we've smoke-tested this release, publish to PyPi. ::
