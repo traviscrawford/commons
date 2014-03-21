@@ -25,6 +25,7 @@ from twitter.common.dirutil import safe_mkdir
 from twitter.pants.base.build_environment import get_buildroot
 from twitter.pants.fs import archive
 from twitter.pants.java.jar import Manifest
+from twitter.pants.targets.internal import InternalTarget
 from twitter.pants.targets.jvm_binary import JvmApp, JvmBinary
 from twitter.pants.tasks import TaskError
 from twitter.pants.tasks.jvm_binary_task import JvmBinaryTask
@@ -78,14 +79,13 @@ class BundleCreate(JvmBinaryTask):
 
     @staticmethod
     def is_app(target):
-      return isinstance(target, (JvmApp, JvmBinary))
+      return isinstance(target, InternalTarget)
 
     def __init__(self, target):
       assert self.is_app(target), "%s is not a valid app target" % target
-
-      self.binary = target if isinstance(target, JvmBinary) else target.binary
-      self.bundles = [] if isinstance(target, JvmBinary) else target.bundles
-      self.basename = target.basename
+      self.binary = target.binary if hasattr(target, 'binary') else target
+      self.bundles = target.bundles if hasattr(target, 'bundles') else []
+      self.basename = target.basename if hasattr(target, 'basename') else target.name
 
   def execute(self, _):
     archiver = archive.archiver(self.archiver_type) if self.archiver_type else None

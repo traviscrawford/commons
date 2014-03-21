@@ -83,12 +83,13 @@ class JvmBinaryTask(Task):
   def _unexcluded_dependencies(self, jardepmap, binary):
     # TODO(John Sirois): Kill this and move jar exclusion to use confs
     excludes = set()
-    for exclude_key in ((e.org, e.name) if e.name else e.org for e in binary.deploy_excludes):
-      exclude = jardepmap.get(exclude_key)
-      if exclude:
-        for basedir, jars in exclude.items():
-          for jar in jars:
-            excludes.add((basedir, jar))
+    if hasattr(binary, 'deploy_excludes'):
+      for exclude_key in ((e.org, e.name) if e.name else e.org for e in binary.deploy_excludes):
+        exclude = jardepmap.get(exclude_key)
+        if exclude:
+          for basedir, jars in exclude.items():
+            for jar in jars:
+              excludes.add((basedir, jar))
     self.context.log.debug('Calculated excludes:\n\t%s' % '\n\t'.join(str(e) for e in excludes))
 
     externaljars = OrderedSet()
