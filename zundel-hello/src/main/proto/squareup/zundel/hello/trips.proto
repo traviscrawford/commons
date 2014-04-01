@@ -1,0 +1,13 @@
+package squareup.zundel.hello;
+option java_package = "com.squareup.zundel.hello.trip";
+
+import "squareup/zundel/hello/distance/distances.proto";
+
+/**
+ * Structure for expressing distance measures: 8mm, 12 parsecs, etc.
+ * Not so useful on its own.
+ */
+message Trip {
+  required string destination  = 1;
+  optional  squareup.zundel.hello.distance.Distance distance = 2;
+}

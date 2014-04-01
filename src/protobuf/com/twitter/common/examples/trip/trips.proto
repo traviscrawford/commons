@@ -1,0 +1,12 @@
+package com.twitter.common.examples.trip;
+
+import "com/twitter/common/examples/distance/distances.proto";
+
+/**
+ * Structure for expressing distance measures: 8mm, 12 parsecs, etc.
+ * Not so useful on its own.
+ */
+message Trip {
+  required string destination  = 1;
+  optional  com.twitter.common.examples.distance.Distance distance = 2;
+}

@@ -1,5 +1,8 @@
 # Define the repository layout
 
+maven_layout('zundel-hello')
+maven_layout('zundel-hello/distance')
+
 source_root('src/antlr', page, java_antlr_library, python_antlr_library)
 source_root('src/java', annotation_processor, jvm_binary, java_library, page)
 source_root('src/protobuf', java_protobuf_library, page)
