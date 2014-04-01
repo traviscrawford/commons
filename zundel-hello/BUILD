@@ -1,4 +1,3 @@
-
 java_library(
   name = 'lib',
   sources = [ 
@@ -24,21 +23,12 @@ jvm_binary(
   main='com.squareup.zundel.hello.SimpleMain',
 )
 
-java_protobuf_library(
-  name='proto',
-  sources = [
-    'src/main/proto/squareup/zundel/hello/trips.proto',
-  ],
-  dependencies = [
-    pants('zundel-hello/distance:proto'),
-  ]
-)
 
 jvm_binary(
   name = 'trip-protobuf-example',
   source = './src/main/java/com/squareup/zundel/hello/TripProtobuf.java' ,
   dependencies = [
-     pants(':proto'),
+    'zundel-hello/src/main/protobuf/squareup/zundel/hello',
   ],
   main='com.squareup.zundel.hello.TripProtobuf',
 )
